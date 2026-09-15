@@ -1,0 +1,26 @@
+{
+  "_lisez_moi": "20 tickets de support, avec la classification attendue. Fictif.",
+  "categories": ["paiement", "livraison", "compte"],
+  "cas": [
+    {"texte": "Ma carte a ete debitee deux fois pour la meme commande.", "categorie": "paiement", "urgence": 3},
+    {"texte": "Bonjour, je n'ai toujours pas recu mon colis commande il y a 12 jours.", "categorie": "livraison", "urgence": 2},
+    {"texte": "Je n'arrive plus a me connecter, le lien de reinitialisation ne marche pas.", "categorie": "compte", "urgence": 2},
+    {"texte": "Le suivi indique livre mais je n'ai rien dans ma boite aux lettres.", "categorie": "livraison", "urgence": 3},
+    {"texte": "Comment changer l'adresse email de mon compte ?", "categorie": "compte", "urgence": 1},
+    {"texte": "Mon paiement en trois fois a ete refuse alors que je remplis les conditions.", "categorie": "paiement", "urgence": 2},
+    {"texte": "Pouvez-vous m'envoyer la facture de la commande CMD-2024-120 ?", "categorie": "paiement", "urgence": 1},
+    {"texte": "URGENT le colis part a la mauvaise adresse, je viens de demenager !", "categorie": "livraison", "urgence": 3},
+    {"texte": "Je souhaite supprimer definitivement mon compte et mes donnees.", "categorie": "compte", "urgence": 2},
+    {"texte": "Quel est le delai de livraison moyen vers la Belgique ?", "categorie": "livraison", "urgence": 1},
+    {"texte": "On m'a preleve 249 euros alors que j'ai annule la commande.", "categorie": "paiement", "urgence": 3},
+    {"texte": "Le mot de passe que je viens de creer n'est pas accepte.", "categorie": "compte", "urgence": 2},
+    {"texte": "Mon colis est arrive ouvert et il manque un article.", "categorie": "livraison", "urgence": 3},
+    {"texte": "Est-ce que vous acceptez le virement bancaire ?", "categorie": "paiement", "urgence": 1},
+    {"texte": "Je recois les emails de quelqu'un d'autre sur mon compte.", "categorie": "compte", "urgence": 3},
+    {"texte": "Bonjour, simple question : ou voir l'historique de mes commandes ?", "categorie": "compte", "urgence": 1},
+    {"texte": "Cela fait trois semaines que j'attends le remboursement promis.", "categorie": "paiement", "urgence": 3},
+    {"texte": "Le transporteur Colidor ne propose aucun suivi, c'est normal ?", "categorie": "livraison", "urgence": 1},
+    {"texte": "Impossible de valider le paiement, la page tourne dans le vide.", "categorie": "paiement", "urgence": 2},
+    {"texte": "Je voudrais recevoir mes commandes a mon adresse professionnelle desormais.", "categorie": "compte", "urgence": 1}
+  ]
+}

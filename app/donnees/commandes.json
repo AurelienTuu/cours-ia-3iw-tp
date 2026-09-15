@@ -1,0 +1,27 @@
+{
+  "_lisez_moi": "Jeu de donnees des TP. Fictif. Sert d'outil a la seance 10.",
+  "commandes": [
+    {"numero": "CMD-2024-118", "statut": "expediee", "transporteur": "Rapidis",
+     "date_commande": "2024-03-03", "date_livraison_prevue": "2024-03-09",
+     "montant_eur": 89.90, "articles": ["Casque audio sans fil"]},
+    {"numero": "CMD-2024-119", "statut": "en preparation", "transporteur": null,
+     "date_commande": "2024-03-05", "date_livraison_prevue": "2024-03-12",
+     "montant_eur": 34.00, "articles": ["Housse de protection", "Cable USB-C"]},
+    {"numero": "CMD-2024-120", "statut": "livree", "transporteur": "Rapidis",
+     "date_commande": "2024-02-18", "date_livraison_prevue": "2024-02-22",
+     "montant_eur": 249.00, "articles": ["Ecran 27 pouces"]},
+    {"numero": "CMD-2024-121", "statut": "annulee", "transporteur": null,
+     "date_commande": "2024-03-01", "date_livraison_prevue": null,
+     "montant_eur": 15.50, "articles": ["Tapis de souris"]},
+    {"numero": "CMD-2024-122", "statut": "expediee", "transporteur": "Colidor",
+     "date_commande": "2024-03-06", "date_livraison_prevue": "2024-03-14",
+     "montant_eur": 129.99, "articles": ["Clavier mecanique"]},
+    {"numero": "CMD-2024-123", "statut": "retournee", "transporteur": "Colidor",
+     "date_commande": "2024-02-09", "date_livraison_prevue": "2024-02-15",
+     "montant_eur": 59.00, "articles": ["Webcam 1080p"]}
+  ],
+  "transporteurs": [
+    {"nom": "Rapidis", "delai_jours": 3, "suivi": true},
+    {"nom": "Colidor", "delai_jours": 6, "suivi": false}
+  ]
+}

@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assistant support : application fil rouge</title>
+<style>
+  :root {
+    --navy: #16284D; --accent: #0EA5E9; --ink: #1F2A37; --gray: #5B6679;
+    --border: #D7DEEA; --soft: #F4F7FC; --card: #EAF1FB; --rouge: #C0504D;
+    --vert: #3FA45B;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font: 15px/1.5 -apple-system, "Segoe UI", Roboto, sans-serif;
+    color: var(--ink); background: var(--soft);
+  }
+  header {
+    background: var(--navy); color: #fff; padding: 18px 24px;
+    border-bottom: 4px solid var(--accent);
+  }
+  header h1 { margin: 0; font: 600 19px/1.3 Georgia, serif; }
+  header p { margin: 4px 0 0; font-size: 13px; color: #9FC5E8; }
+  main { max-width: 900px; margin: 0 auto; padding: 24px 16px 60px; }
+  nav { display: flex; gap: 6px; margin-bottom: 18px; flex-wrap: wrap; }
+  nav button {
+    border: 1px solid var(--border); background: #fff; color: var(--gray);
+    padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px;
+  }
+  nav button[aria-selected="true"] {
+    background: var(--navy); color: #fff; border-color: var(--navy);
+  }
+  section[hidden] { display: none; }
+  .panneau {
+    background: #fff; border: 1px solid var(--border); border-radius: 10px;
+    padding: 20px;
+  }
+  label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 6px; }
+  textarea, input[type=text], select {
+    width: 100%; padding: 10px; border: 1px solid var(--border);
+    border-radius: 6px; font: inherit; background: #fff;
+  }
+  textarea { min-height: 130px; resize: vertical; }
+  .ligne { display: flex; gap: 12px; align-items: flex-end; margin-top: 14px; }
+  .ligne > div { flex: 0 0 180px; }
+  button.envoyer {
+    background: var(--accent); color: #fff; border: 0; padding: 11px 22px;
+    border-radius: 6px; font-size: 15px; font-weight: 600; cursor: pointer;
+    margin-left: auto;
+  }
+  button.envoyer:disabled { background: var(--gray); cursor: not-allowed; }
+  .sortie {
+    margin-top: 18px; border-top: 1px solid var(--border); padding-top: 16px;
+    min-height: 60px; white-space: pre-wrap;
+  }
+  .attente { color: var(--gray); font-style: italic; }
+  .curseur::after {
+    content: "▌"; color: var(--accent); animation: clignote 1s steps(2) infinite;
+  }
+  @keyframes clignote { 50% { opacity: 0; } }
+  .erreur {
+    background: #FDECEA; border: 1px solid var(--rouge); color: #7A2E2C;
+    padding: 12px 14px; border-radius: 6px; font-size: 14px;
+  }
+  .usage {
+    margin-top: 14px; font-size: 12.5px; color: var(--gray);
+    display: flex; gap: 18px; flex-wrap: wrap;
+  }
+  .usage b { color: var(--navy); }
+  .sources { margin-top: 14px; }
+  .sources h3 { font-size: 12px; text-transform: uppercase; color: var(--accent);
+                letter-spacing: .04em; margin: 0 0 8px; }
+  .source {
+    display: inline-block; background: var(--card); border: 1px solid var(--border);
+    border-radius: 20px; padding: 4px 12px; font-size: 12.5px; margin: 0 6px 6px 0;
+  }
+  .source span { color: var(--gray); }
+  footer { text-align: center; font-size: 12px; color: var(--gray); padding: 0 16px 30px; }
+  code { background: var(--card); padding: 1px 5px; border-radius: 3px; font-size: 12.5px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Assistant support</h1>
+  <p>Application fil rouge : ce front est fourni et gelé. Vous écrivez le serveur.</p>
+</header>
+
+<main>
+  <nav role="tablist">
+    <button role="tab" data-onglet="resumer" aria-selected="true">Résumer &middot; S9</button>
+    <button role="tab" data-onglet="assistant" aria-selected="false">Assistant &middot; S10</button>
+    <button role="tab" data-onglet="documents" aria-selected="false">Documents &middot; S13</button>
+  </nav>
+
+  <section id="panneau-resumer" class="panneau">
+    <label for="texte">Texte du ticket à résumer</label>
+    <textarea id="texte" placeholder="Collez ici le message d'un client."></textarea>
+    <div class="ligne">
+      <div>
+        <label for="ton">Ton du résumé</label>
+        <select id="ton">
+          <option value="neutre">neutre</option>
+          <option value="direct">direct</option>
+        </select>
+      </div>
+      <button class="envoyer" data-route="/api/resumer">Résumer</button>
+    </div>
+    <div class="sortie" id="sortie-resumer"></div>
+    <div class="usage" id="usage-resumer"></div>
+  </section>
+
+  <section id="panneau-assistant" class="panneau" hidden>
+    <label for="question-assistant">Question sur une commande</label>
+    <input type="text" id="question-assistant"
+           placeholder="Où en est la commande CMD-2024-118 ?">
+    <div class="ligne">
+      <button class="envoyer" data-route="/api/assistant">Demander</button>
+    </div>
+    <div class="sortie" id="sortie-assistant"></div>
+    <div class="usage" id="usage-assistant"></div>
+  </section>
+
+  <section id="panneau-documents" class="panneau" hidden>
+    <label for="question-documents">Question sur la documentation</label>
+    <input type="text" id="question-documents"
+           placeholder="Comment demander un remboursement ?">
+    <div class="ligne">
+      <button class="envoyer" data-route="/api/documents">Chercher</button>
+    </div>
+    <div class="sources" id="sources-documents"></div>
+    <div class="sortie" id="sortie-documents"></div>
+    <div class="usage" id="usage-documents"></div>
+  </section>
+</main>
+
+<footer>
+  Les Fondamentaux de l'IA &middot; 3IW &middot; ESGI
+  &mdash; contrat de route : <code>app/CONTRAT.md</code>
+</footer>
+
+<script>
+// Ce fichier est fourni et gele. Le modifier est hors sujet et non note.
+// Il n'appelle QUE les routes de votre serveur, jamais le modele directement.
+
+const ONGLETS = ["resumer", "assistant", "documents"];
+
+document.querySelectorAll('nav button').forEach((bouton) => {
+  bouton.addEventListener('click', () => {
+    ONGLETS.forEach((nom) => {
+      const actif = nom === bouton.dataset.onglet;
+      document.getElementById('panneau-' + nom).hidden = !actif;
+      document.querySelector(`nav button[data-onglet="${nom}"]`)
+        .setAttribute('aria-selected', String(actif));
+    });
+  });
+});
+
+function corpsDeLaRequete(route) {
+  if (route === '/api/resumer') {
+    return {
+      texte: document.getElementById('texte').value,
+      ton: document.getElementById('ton').value,
+    };
+  }
+  const cle = route === '/api/assistant' ? 'assistant' : 'documents';
+  return { question: document.getElementById('question-' + cle).value };
+}
+
+function nomDuPanneau(route) {
+  return route.split('/').pop();
+}
+
+async function envoyer(bouton) {
+  const route = bouton.dataset.route;
+  const nom = nomDuPanneau(route);
+  const sortie = document.getElementById('sortie-' + nom);
+  const usage = document.getElementById('usage-' + nom);
+  const sources = document.getElementById('sources-' + nom);
+
+  bouton.disabled = true;
+  sortie.className = 'sortie attente';
+  sortie.textContent = 'Le modèle réfléchit...';
+  usage.textContent = '';
+  if (sources) sources.innerHTML = '';
+
+  const debut = performance.now();
+  try {
+    const reponse = await fetch(route, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(corpsDeLaRequete(route)),
+    });
+
+    // Une erreur arrive en JSON classique, jamais en SSE : voir le contrat.
+    if (!reponse.ok) {
+      const details = await reponse.json().catch(() => ({}));
+      throw new Error(details.erreur || `Le serveur a répondu ${reponse.status}.`);
+    }
+
+    sortie.className = 'sortie curseur';
+    sortie.textContent = '';
+    let premierFragment = null;
+
+    const lecteur = reponse.body.getReader();
+    const decodeur = new TextDecoder();
+    let tampon = '';
+
+    for (;;) {
+      const { done, value } = await lecteur.read();
+      if (done) break;
+      tampon += decodeur.decode(value, { stream: true });
+      const morceaux = tampon.split('\n\n');
+      tampon = morceaux.pop();
+      for (const morceau of morceaux) {
+        const ligne = morceau.split('\n').find((l) => l.startsWith('data: '));
+        if (!ligne) continue;
+        const charge = ligne.slice(6).trim();
+        if (!charge || charge === '[DONE]') continue;
+        const evenement = JSON.parse(charge);
+
+        if (evenement.sources && sources) {
+          sources.innerHTML = '<h3>Sources retenues</h3>' + evenement.sources
+            .map((s) => `<span class="source">${s.titre}
+                         <span>${Number(s.score).toFixed(2)}</span></span>`)
+            .join('');
+        }
+        if (evenement.delta) {
+          if (premierFragment === null) premierFragment = performance.now() - debut;
+          sortie.textContent += evenement.delta;
+        }
+        if (evenement.done) {
+          const u = evenement.usage || {};
+          usage.innerHTML = [
+            `entrée <b>${u.entree ?? '?'}</b> tokens`,
+            `sortie <b>${u.sortie ?? '?'}</b> tokens`,
+            `serveur <b>${u.ms ?? '?'}</b> ms`,
+            `premier fragment <b>${premierFragment ? Math.round(premierFragment) : '?'}</b> ms`,
+          ].join('');
+        }
+      }
+    }
+    sortie.className = 'sortie';
+    if (!sortie.textContent.trim()) {
+      sortie.className = 'sortie attente';
+      sortie.textContent = 'Le serveur a répondu, mais sans aucun fragment.';
+    }
+  } catch (erreur) {
+    sortie.className = 'sortie';
+    sortie.innerHTML = '';
+    const boite = document.createElement('div');
+    boite.className = 'erreur';
+    boite.textContent = erreur.message;
+    sortie.appendChild(boite);
+  } finally {
+    bouton.disabled = false;
+  }
+}
+
+document.querySelectorAll('button.envoyer').forEach((bouton) => {
+  bouton.addEventListener('click', () => envoyer(bouton));
+});
+</script>
+</body>
+</html>

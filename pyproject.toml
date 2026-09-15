@@ -1,0 +1,27 @@
+[project]
+name = "cours-ia-3iw"
+version = "1.0.0"
+description = "Les Fondamentaux de l'IA, 3IW ESGI : depot etudiant"
+readme = "README.md"
+# 3.11 suffit pour ecrire votre route et lancer les tests.
+requires-python = ">=3.11"
+dependencies = [
+    # suite de conformite
+    "pytest>=8.0",
+    "httpx>=0.27",
+    # voie Python
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["examen/conformite"]
+addopts = "-q --tb=short"
+markers = [
+    "s9: route /api/resumer, seance 9",
+    "s10: route /api/assistant, seance 10",
+    "s13: route /api/documents, seance 13",
+]
