@@ -32,8 +32,26 @@ def valider_resumer(corps):
     20 000 caracteres, et pour un ton qui n'est ni 'neutre' ni 'direct'.
     L'absence de 'ton' vaut 'neutre'.
     """
-    raise NotImplementedError("TODO 1 : valider corps['texte'] et corps['ton']")
+    if not isinstance(corps, dict):
+        raise RequeteInvalide("Le corps de la requête doit être un dictionnaire.")
 
+    if "texte" not in corps:
+        raise RequeteInvalide("Le champ 'texte' est absent.")
+    
+    texte = corps["texte"]
+
+    if not isinstance(texte, str) or not texte.strip():
+        raise RequeteInvalide("Le champ 'texte' doit être une chaîne de caractères non vide.")
+        
+    if len(texte) > 20000:
+        raise RequeteInvalide("Le champ 'texte' dépasse la limite de 20 000 caractères.")
+
+    ton = corps.get("ton", "neutre")
+    
+    if ton not in ("neutre", "direct"):
+        raise RequeteInvalide("Le champ 'ton' doit être soit 'neutre', soit 'direct'.")
+
+    return texte, ton
 
 # =====================================================================
 # TODO 2 : assembler le prompt, cote serveur et nulle part ailleurs
@@ -45,7 +63,24 @@ def prompt_resumer(texte, ton):
     Le texte du client est une DONNEE, jamais une consigne : gardez-le dans un
     message 'user' distinct de la consigne systeme.
     """
-    raise NotImplementedError("TODO 2 : construire les messages")
+    if ton == "direct":
+        consigne_ton = "Allez droit au but."
+    else:
+        consigne_ton = "Adoptez un ton neutre, objectif et professionnel."
+
+    system_prompt = (
+        "Vous êtes un assistant expert en synthèse de documents.\n"
+        "Votre rôle est de résumer le texte fourni par l'utilisateur.\n"
+        f"Consigne de ton : {consigne_ton}\n\n"
+        "Format attendu :\n"
+        "- Restez concis.\n"
+        "- Restez fidèle au contenu d'origine sans ajouter d'informations extérieures."
+    )
+
+    return [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": texte}
+    ]
 
 
 @routeur.post("/api/resumer")
@@ -59,10 +94,11 @@ async def resumer(requete: Request):
         # =============================================================
         # TODO 3 et 4 : appeler le modele et relayer chaque fragment
         # =============================================================
-        # `streamer(messages)` produit des couples (genre, valeur) :
-        #   ("delta", "un morceau de texte")        -> a renvoyer via fragment()
-        #   ("usage", {"entree": .., "sortie": ..}) -> a garder pour la fin
-        raise NotImplementedError("TODO 3 et 4 : boucler sur streamer()")
+        async for genre, valeur in streamer(messages):
+            if genre == "delta":
+                yield fragment(valeur)
+            elif genre == "usage":
+                usage = valeur
         # =============================================================
         # TODO 5 : cloturer le flux avec l'evenement done et l'usage
         # =============================================================
